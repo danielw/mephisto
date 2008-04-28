@@ -1,3 +1,5 @@
+require 'cgi'
+
 module Liquid
   
   module StandardFilters
@@ -22,6 +24,12 @@ module Liquid
     def capitalize(input)
       input.to_s.capitalize
     end
+        
+    def escape(input)
+      CGI.escapeHTML(input) rescue input
+    end
+    
+    alias_method :h, :escape
     
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...")
@@ -40,8 +48,14 @@ module Liquid
     end
     
     def strip_html(input)
-      input.to_s.gsub(/<.*?>/, '')
+      input.to_s.gsub(/<.*?>/m, '')
+    end       
+    
+    # Remove all newlines from the string
+    def strip_newlines(input)        
+      input.to_s.gsub(/\n/, '')      
     end
+    
     
     # Join elements of the array with certain character between them
     def join(input, glue = ' ')
@@ -51,6 +65,31 @@ module Liquid
     # Sort elements of the array
     def sort(input)
       [input].flatten.sort
+    end               
+            
+    # Replace occurrences of a string with another
+    def replace(input, string, replacement = '')
+      input.to_s.gsub(string, replacement)
+    end
+                                                 
+    # Replace the first occurrences of a string with another
+    def replace_first(input, string, replacement = '')
+      input.to_s.sub(string, replacement)
+    end              
+                                                           
+    # remove a substring
+    def remove(input, string)
+      input.to_s.gsub(string, '')      
+    end
+                        
+    # remove the first occurrences of a substring
+    def remove_first(input, string)
+      input.to_s.sub(string, '')      
+    end            
+                                             
+    # Add <br /> tags in front of all newlines in input string
+    def newline_to_br(input)        
+      input.to_s.gsub(/\n/, "<br />\n")      
     end
     
     # Reformat a date

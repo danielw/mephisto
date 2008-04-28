@@ -1,12 +1,12 @@
 module Liquid
-  # Container for liquid nodes which conveniently wrapps decision making logic
+  # Container for liquid nodes which conveniently wraps decision making logic
   #
   # Example:
   #
   #   c = Condition.new('1', '==', '1') 
   #   c.evaluate #=> true
   #
-  class Condition
+  class Condition #:nodoc:
     @@operators = {
       '==' => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
       '!=' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
@@ -14,7 +14,8 @@ module Liquid
       '<'  => :<,
       '>'  => :>,
       '>=' => :>=,
-      '<=' => :<=
+      '<=' => :<=,
+      'contains' => lambda { |cond, left, right| left.include?(right) },
     }
     
     def self.operators
@@ -26,10 +27,29 @@ module Liquid
   
     def initialize(left = nil, operator = nil, right = nil)
       @left, @operator, @right = left, operator, right
+      @child_relation  = nil
+      @child_condition = nil
     end
     
     def evaluate(context = Context.new)
-      interpret_condition(left, right, operator, context)
+      result = interpret_condition(left, right, operator, context)        
+      
+      case @child_relation
+      when :or 
+        result || @child_condition.evaluate(context)
+      when :and 
+        result && @child_condition.evaluate(context)
+      else
+        result
+      end      
+    end                    
+    
+    def or(condition)
+      @child_relation, @child_condition = :or, condition
+    end
+
+    def and(condition)
+      @child_relation, @child_condition = :and, condition
     end
   
     def attach(attachment)
@@ -38,6 +58,10 @@ module Liquid
   
     def else?
       false
+    end                          
+    
+    def inspect
+      "#<Condition #{[@left, @operator, @right].compact.join(' ')}>"
     end
     
     private
@@ -70,18 +94,20 @@ module Liquid
       return context[left] if op == nil      
 
       left, right = context[left], context[right]
+            
 
       operation = self.class.operators[op] || raise(ArgumentError.new("Error in tag '#{name}' - Unknown operator #{op}"))
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
-      elsif left.respond_to?(operation) and right.respond_to?(operation)
+      elsif left.respond_to?(operation) and right.respond_to?(operation)        
         left.send(operation, right)
       else
         nil
       end
     end    
-  end
+  end           
+
 
   class ElseCondition < Condition
       

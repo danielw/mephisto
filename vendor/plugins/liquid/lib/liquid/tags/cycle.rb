@@ -1,4 +1,17 @@
 module Liquid
+  
+  # Cycle is usually used within a loop to alternate between values, like colors or DOM classes.
+  #
+  #   {% for item in items %}
+  #     <div class="{% cycle 'red', 'green', 'blue' %}"> {{ item }} </div>
+  #   {% end %}
+  #
+  #    <div class="red"> Item one </div>
+  #    <div class="green"> Item two </div>
+  #    <div class="blue"> Item three </div>
+  #    <div class="red"> Item four </div>
+  #    <div class="green"> Item five</div>
+  #
   class Cycle < Tag
     SimpleSyntax = /#{QuotedFragment}/        
     NamedSyntax = /(#{QuotedFragment})\s*\:\s*(.*)/

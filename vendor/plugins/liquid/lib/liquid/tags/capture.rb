@@ -1,4 +1,16 @@
 module Liquid
+  
+  # Capture stores the result of a block into a variable without rendering it inplace.
+  #
+  #   {% capture heading %}
+  #     Monkeys!
+  #   {% endcapture %}
+  #   ...
+  #   <h1>{{ monkeys }}</h1>
+  #
+  # Capture is useful for saving content for use later in your template, such as 
+  # in a sidebar or footer.
+  #
   class Capture < Block
     Syntax = /(\w+)/
 

@@ -1,4 +1,13 @@
 module Liquid
+
+  # Assign sets a variable in your template.
+  #
+  #   {% assign foo = 'monkey' %}
+  #
+  # You can then use the variable later in the page.
+  #
+  #  {{ monkey }}
+  #
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(#{QuotedFragment}+)/   
   

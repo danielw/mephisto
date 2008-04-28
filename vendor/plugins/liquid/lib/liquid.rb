@@ -13,8 +13,8 @@
 # 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOa AND
-# NONINFRINGEMENT. IN NO EVENT SaALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -32,10 +32,11 @@ module Liquid
   VariableSegment             = /[\w\-]\??/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
+  VariableIncompleteEnd       = /\}\}?/
   QuotedFragment              = /"[^"]+"|'[^']+'|[^\s,|]+/
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/
-  TemplateParser              = /(#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableEnd})/
-  VariableParser              = /(?=\[)#{VariableSegment}+(?=\])|#{VariableSegment}+/
+  TemplateParser              = /(#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd})/
+  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+/
 end
 
 require 'liquid/drop'
@@ -52,6 +53,7 @@ require 'liquid/template'
 require 'liquid/htmltags'
 require 'liquid/standardfilters'
 require 'liquid/condition'
+require 'liquid/module_ex'
 
 # Load all the tags of the standard library 
 #

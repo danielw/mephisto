@@ -8,6 +8,8 @@ class IfElseTest < Test::Unit::TestCase
     assert_template_result('  this text should go into the output  ',
               ' {% if true %} this text should go into the output {% endif %} ')
     assert_template_result('  you rock ?','{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
+    assert_template_result(' alright ','{% if "books" == "books" %} alright {% endif %}')
+    assert_template_result('alright','{% if "books-and-videos" == "books-and-videos" %} alright {% endif %}')
   end
 
   def test_if_else
@@ -18,7 +20,30 @@ class IfElseTest < Test::Unit::TestCase
   
   def test_if_boolean
     assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var' => true)    
+  end        
+  
+  def test_if_or
+    assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a' => true, 'b' => true)    
+    assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a' => true, 'b' => false)    
+    assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a' => false, 'b' => true)    
+    assert_template_result('',     '{% if a or b %} YES {% endif %}', 'a' => false, 'b' => false)        
+
+    assert_template_result(' YES ','{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => true)    
+    assert_template_result('',     '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)        
   end
+  
+  def test_if_or_with_operators
+    assert_template_result(' YES ','{% if a == true or b == true %} YES {% endif %}', 'a' => true, 'b' => true)    
+    assert_template_result(' YES ','{% if a == true or b == false %} YES {% endif %}', 'a' => true, 'b' => true)    
+    assert_template_result('','{% if a == false or b == false %} YES {% endif %}', 'a' => true, 'b' => true)    
+  end     
+  
+  def test_if_and
+    assert_template_result(' YES ','{% if true and true %} YES {% endif %}')    
+    assert_template_result('','{% if false and true %} YES {% endif %}')    
+    assert_template_result('','{% if false and true %} YES {% endif %}')    
+  end
+  
   
   def test_hash_miss_generates_false
     assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo' => {})

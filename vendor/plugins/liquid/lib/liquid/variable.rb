@@ -1,7 +1,15 @@
 module Liquid
   
-  # Hols variables. Variables are only loaded "just in time"
-  # they are not evaluated as part of the render stage
+  # Holds variables. Variables are only loaded "just in time"
+  # and are not evaluated as part of the render stage
+  #
+  #   {{ monkey }}
+  #   {{ user.name }}
+  #
+  # Variables can be combined with filters:
+  #
+  #   {{ user | link }}
+  #
   class Variable    
     attr_accessor :filters, :name
     
@@ -13,7 +21,7 @@ module Liquid
         @name = match[1]
         if markup.match(/#{FilterSperator}\s*(.*)/)
           filters = Regexp.last_match(1).split(/#{FilterSperator}/)
-
+        
           filters.each do |f|    
             if matches = f.match(/\s*(\w+)/)
               filtername = matches[1]
